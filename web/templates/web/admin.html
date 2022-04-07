@@ -1,0 +1,33 @@
+{% extends "web/layout.html" %}
+{% block title %}
+Admin
+{% endblock %}
+{% block content %}
+{% if not request.session.logged_in %}
+<p>You are not logged in</p>
+{% else %}
+{% if request.session.is_admin %}
+    <p>Delete User:</p>
+    <form action="#" method="post" id="form">
+        {% csrf_token %}
+        <select id="user_id" name="user_id" form="form">
+            {% for account in accounts %}
+            {% with user_id=account.0 %}
+            <option value={{user_id}}>{{account.1}}</option>
+            {% endwith %}
+            {% endfor %}
+        </select>
+        <input type="submit" class="btn" value="Delete" name="button">
+    </form>
+    {% if not delete_success is None %}
+        {% if delete_success %}
+            <p style="color:green">Account deleted successfully</p>
+        {% else %}
+            <p style="color:red">Error when deleting the account. Make sure that the account has no assigned devices, and is not partaking in any transfers</p>
+        {% endif %}
+    {% endif %}
+{% else %}
+    <p>You are not an admin</p>
+{% endif %}
+{% endif %}
+{% endblock %}

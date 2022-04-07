@@ -1,0 +1,60 @@
+{% extends "web/layout.html" %}
+{% block title %}
+My devices
+{% endblock %}
+{% block content %}
+{% if request.session.logged_in %}
+    <p>Your devices:</p>
+        {% if no_devices %}
+            <p>There are currently no devices assigned to your account</p>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Device id</td>
+                    <th>Device model</td>
+                    <th>Status</td>
+                    <th>Action</td>
+                </tr>
+                {% for device_row in user_devices %}
+                <tr>
+                    <td>{{device_row.0}}</td>
+                    <td>{{device_row.1}}</td>
+                    <td>{{device_row.2}}</td>
+                    {% with device_id_=device_row.0 %}
+                    {% if device_row.2 == "SECURE" %}
+                    <td><a href="{% url 'change_status' device_id=device_id_ change_to='MISSING' %}">Switch status to missing</a></td>
+                    {% else %}
+                    <td><a href="{% url 'change_status' device_id=device_id_ change_to='SECURE' %}">Switch status to secure</a></td>
+                    {% endif %}
+                    {% endwith %}
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    {% if not models %}
+    <a href="{% url 'new_device' %}">Assign a new device</a>
+    {% else %}
+    <form action="#" method="post" id="form">
+        {% csrf_token %}
+        <label for="device_id">Device id:</label>
+        <input id="device_id" name="device_id">
+        <label for="model_id">Model:</label>
+        <select id="model_id" name="model_id" form="form">
+            {% for model in models %}
+            {% with model_id=model.0 %}
+            <option value={{model_id}}>{{model.1}}</option>
+            {% endwith %}
+            {% endfor %}
+        </select>
+        <input type="submit" class="btn" value="Submit" name="button">
+    </form>
+    {% endif %}
+    {% if assign_status == 1 %}
+    <p style="color:green">Device assigned successfully</p>
+    {% elif assign_status == -1 %}
+    <p style="color:red">That device already exists on our system, ask its owner to transfer it to you</p>
+    {% endif %}
+{% else %}
+    <a href="{% url 'login' %}">Click here to log in to your account</a>
+{% endif %}
+{% endblock %}

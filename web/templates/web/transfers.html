@@ -1,0 +1,99 @@
+{% extends "web/layout.html" %}
+{% block title %}
+Transfers
+{% endblock %}
+{% block content %}
+{% if request.session.logged_in %}
+
+    {% if not incoming_transfers and not outgoing_transfers %}
+        <p>You are not involved in any device transfers at the moment</p>
+    {% else %}
+        {% if incoming_transfers %}
+            <p>Incoming transfers</p>
+            <table>
+                <tr>
+                    <th>Device id</td>
+                    <th>Device model</td>
+                    <th>Current owner</td>
+                    <th>Action</td>
+                </tr>
+                {% for device_transfer in incoming_transfers %}
+                <tr>
+                    <td>{{device_transfer.0}}</td>
+                    <td>{{device_transfer.1}}</td>
+                    <td>{{device_transfer.2}}: {{device_transfer.3}}</td>
+                    {% with device_id_=device_transfer.0 %}
+                    <td>
+                        <a href="{% url 'transfer_response' device_id=device_id_ response='ACCEPT' %}">Accept</a>
+                        <a href="{% url 'transfer_response' device_id=device_id_ response='DECLINE' %}">Decline</a>
+                    </td>
+                    {% endwith %}
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if outgoing_transfers %}
+            <p>Outgoing transfers</p>
+            <table>
+                <th>Device id</td>
+                <th>Device model</td>
+                <th>New owner</td>
+                {% for device_transfer in outgoing_transfers %}
+                <tr>
+                    <td>{{device_transfer.0}}</td>
+                    <td>{{device_transfer.1}}</td>
+                    <td>{{device_transfer.2}}: {{device_transfer.3}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    {% endif %}
+    
+    {% if not incoming_response_error is None %}
+            {% if incoming_response_error %}
+                <p style="color:red">Something went wrong when responding to the transfer request</p>
+            {% else %}
+                <p style="color:green">Response sent successfully</p>
+            {% endif %}
+    {% endif %}
+    
+    {% if not devices %}
+        <a href="{% url 'create_transfer' %}">Transfer one of your devices</a>
+    {% else %}
+        <form action="#" method="post" id="form">
+            {% csrf_token %}
+            <label for="device_id">Device id:</label>
+            <select id="device_id" name="device_id" form="form">
+                {% for device in devices %}
+                    {% with device_id=device.0 %}
+                    <option value={{device.0}}>{{device.0}}: {{device.1}}</option>
+                    {% endwith %}
+                {% endfor %}
+            </select>
+            <label for="new_owner_email">New user's email:</label>
+            <input id="new_owner_email" name="new_owner_email"> 
+            <input type="submit" class="btn" value="Submit" name="button">
+        </form>
+        {% if same_email_error %}
+            <p style="color:red">You can't transfer device to your own account</p>
+        {% endif %}
+
+        {% if not new_tranfer_request_success is None %}
+            {% if new_tranfer_request_success %}
+                <p style="color:green">Transfer request sent successfully</p>
+            {% else %}
+                <p style="color:red">Transfer request failed. Please check the email that you entered</p>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    
+
+
+
+{% else %}
+    <a href="{% url 'login' %}">Log in to your account to view device transfers</a>
+{% endif %}
+
+{% endblock %}

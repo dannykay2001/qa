@@ -1,0 +1,38 @@
+{% extends "web/layout.html" %}
+{% block title %}
+Register
+{% endblock %}
+{% block content %}
+<p>Register:</p> 
+<form action="#" method="post">
+    {% csrf_token %}
+    <label for="email">Your email:</label>
+    <input id="email" name="email">
+    <label for="name">Your name:</label>
+    <input id="name" name="name">
+    <label for="password">Password:</label>
+    <input id="password" name="password" type="password">
+    <label for="confirm_password">Confirm password:</label>
+    <input id="confirm_password" name="confirm_password" type="password">
+    <input type="submit" class="btn" value="Submit" name="button"> 
+</form>
+{% if email_invalid %}
+<p style="color:red">Make sure you have entered a valid email</p>
+{% endif %}
+{% if name_invalid %}
+<p style="color:red">Make sure you're name only contains letters</p>
+{% endif %}
+{% if password_invalid %}
+<p style="color:red">Make sure your password contains at least 8 characters, and has both a number and a letter in it</p>
+{% endif %}
+{% if password_no_match %}
+<p style="color:red">The two passwords that you have entered do not match</p>
+{% endif %}
+{% if email_in_use %}
+<p style="color:red">The email that you have entered is already in use. Click the link below to log in to your account</p>
+{% endif %}
+{% if sql_error %}
+<p style="color:red">Sorry, something went wrong on our end. Please try again</p>
+{% endif %}
+<a href="{% url 'login' %}">I already have an account</a>
+{% endblock %}

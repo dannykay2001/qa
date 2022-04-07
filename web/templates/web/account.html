@@ -1,0 +1,42 @@
+{% extends "web/layout.html" %}
+{% block title %}
+Account
+{% endblock %}
+{% block content %}
+{% if request_admin_success %}
+<p style="color:green">Account was promoted to admin successfully</p>
+{% endif %}
+{% if change_password %}
+<form action="#" method="post">
+    {% csrf_token %}
+    <label for="current_password">Password:</label>
+    <input id="current_password" name="current_password" type="password">
+    <label for="new_password">Password:</label>
+    <input id="new_password" name="new_ password" type="password">
+    <label for="confirm_password">Confirm password:</label>
+    <input id="confirm_password" name="confirm_password" type="password">
+    <input type="submit" class="btn" value="Change password" name="change_password_button"> 
+</form>
+{% endif %}
+
+{% if request_admin %}
+<form action="#" method="post">
+    {% csrf_token %}
+    <label for="admin_password">Enter the admin password to promote your account to admin:</label>
+    <input id="admin_password" name="admin_password" type="password">
+    <input type="submit" class="btn" value="Promote to admin" name="admin_button">
+</form>
+
+{% if request_admin_password_incorrect %}
+<p style="color:red">That is not the correct password</p>
+{% endif %}
+
+{% endif %}
+
+{% if not request.session.is_admin %}
+<a href="{% url 'request_admin' %}">Request admin</a>
+{% endif %}
+
+<a href="{% url 'logout' %}">Log out</a>
+
+{% endblock %}
