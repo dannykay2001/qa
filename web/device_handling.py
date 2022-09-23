@@ -1,5 +1,9 @@
 from .sql import SqlRunner
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class DeviceModelRetriever():
     def get_all_models():
         return SqlRunner.run_sql_get_all("SELECT model_id, model_name FROM device_application.device_models")
@@ -13,12 +17,18 @@ class UserDeviceRetriever():
         if exclude_open_transfers:
             query+=" AND device_assignments.open_transfer=0"
         return SqlRunner.run_sql_get_all(query)
+    
+    def device_belongs_to_user(user_id, device_id):
+        return SqlRunner.run_sql_get_single("""SELECT device_assignments.user_id FROM 
+        device_application.device_assignments where device_assignments.device_id = '{}'""".format(device_id))[0] == user_id 
+
 
 class DeviceHandler():
     def change_device_status(device_id, change_to):
         SqlRunner.run_sql_no_response("UPDATE `device_application`.`device_assignments` SET `status` = '{}' WHERE (`device_id` = '{}')".format(change_to, device_id))
     
     def assign_new_device(device_id, user_id, model_id):
+        SqlRunner.validate_args([device_id])
         SqlRunner.run_sql_no_response("INSERT INTO `device_application`.`device_assignments` (`device_id`, `user_id`, `model_id`, `status`, `open_transfer`) VALUES ('{}', '{}', '{}', 'SECURE', '0')".format(device_id, user_id, model_id))
     
     def get_incoming_transfers(user_id):
