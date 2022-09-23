@@ -1,4 +1,8 @@
 from django.db import connection
+import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SqlRunner():
     def run_sql_get_single(statement):
@@ -29,4 +33,10 @@ class SqlRunner():
         with connection.cursor() as cursor:
             cursor.execute(statment)
             return
+    
+    def validate_args(args):
+        for arg in args:
+            if "'" in arg or '"' in arg or '-' in arg:
+                raise Exception("Arguments passed from user contain a banned character. [', \", -")
+        return True
 
