@@ -30,6 +30,7 @@ class AccountCreator:
 
     def attempt_create_user(name, email, password, is_admin):
         try:
+            SqlRunner.validate_args([name, email, password, is_admin])
             password_hash = PasswordHasher.hash_password(password)
             SqlRunner.run_sql_no_response("INSERT INTO `device_application`.`user_accounts` (`user_display_name`, `user_email`, `user_password_hash`, `is_admin`) VALUES ('{}', '{}', '{}', '{}');".format(name, email, password_hash, is_admin))
             return 1
@@ -42,8 +43,6 @@ class LoginHandler:
         if not email or not AccountHandler.user_exists(email):
             return False
         if not password or PasswordHasher.hash_password(password) != SqlRunner.run_sql_get_single('SELECT user_password_hash FROM device_application.user_accounts WHERE user_email="{}"'.format(email))[0]:
-            # logger.error(SqlRunner.run_sql_get_single('SELECT user_password_hash FROM device_application.user_accounts WHERE user_email="{}"'.format(email)))
-            # logger.error(PasswordHasher.hash_password(password))
             return False
         
         user_details = SqlRunner.run_sql_get_single('SELECT user_id, user_display_name, user_email, is_admin FROM device_application.user_accounts WHERE user_email="{}"'.format(email))
