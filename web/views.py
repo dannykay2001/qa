@@ -47,7 +47,8 @@ def new_device(request):
     return my_devices(request, models=models)
 
 def change_status(request, device_id, change_to):
-    DeviceHandler.change_device_status(device_id, change_to)
+    if UserDeviceRetriever.device_belongs_to_user(request.session['user_id'], device_id) and change_to == 'MISSING' or change_to == 'SECURE':
+        DeviceHandler.change_device_status(device_id, change_to)
     return my_devices(request)
 
 def login(request):
