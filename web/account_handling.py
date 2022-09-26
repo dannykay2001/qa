@@ -2,10 +2,6 @@ from ast import Pass
 from .sql import SqlRunner
 import hashlib
 
-import logging
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
-
 class PasswordHasher:
     def hash_password(password):
         return hashlib.md5((password + "h7dhski").encode()).hexdigest()

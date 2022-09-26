@@ -11,15 +11,6 @@ class SqlRunner():
             response = cursor.fetchone()
         return response
 
-    # def run_sql_get_all(statement):
-    #     with connection.cursor() as cursor:
-    #         cursor.execute(statement)
-    #         columns = [column[0] for column in cursor.description]
-    #     return [
-    #         dict(zip(columns, row))
-    #         for row in cursor.fetchall()
-    #     ]
-
     def run_sql_get_all(statement):
         output=[]
         with connection.cursor() as cursor:

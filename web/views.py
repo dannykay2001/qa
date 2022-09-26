@@ -99,7 +99,6 @@ def register(request):
     return render(request, "web/register.html")
 
 def transfers(request, incoming_response_error=None, new_tranfer_request_success=None, devices=None, same_email_error=None):
-    # logger.error([row[:2] for row in UserDeviceRetriever.get_user_devices(request.session["user_id"])])
     if request.session.has_key("logged_in") and request.session["logged_in"]:
         incoming_transfers = DeviceHandler.get_incoming_transfers(request.session["user_id"])
         outgoing_transfers = DeviceHandler.get_outgoing_transfers(request.session["user_id"])
@@ -110,7 +109,6 @@ def transfers(request, incoming_response_error=None, new_tranfer_request_success
 def create_transfer(request):
     devices = [row[:2] for row in UserDeviceRetriever.get_user_devices(request.session["user_id"], exclude_open_transfers=True)]
     if request.method == 'POST':
-        # if request.POST.has_key("device_id") and request.POST.has_key("new_owner_email"):
         if "device_id" in request.POST and "new_owner_email" in request.POST:
             if request.POST["new_owner_email"] == request.session["user_email"]:
                 return transfers(request, devices=devices, same_email_error=True)

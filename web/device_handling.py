@@ -1,9 +1,5 @@
 from .sql import SqlRunner
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 class DeviceModelRetriever():
     def get_all_models():
         return SqlRunner.run_sql_get_all("SELECT model_id, model_name FROM device_application.device_models")
@@ -29,7 +25,8 @@ class DeviceHandler():
     
     def assign_new_device(device_id, user_id, model_id):
         SqlRunner.validate_args([device_id])
-        SqlRunner.run_sql_no_response("INSERT INTO `device_application`.`device_assignments` (`device_id`, `user_id`, `model_id`, `status`, `open_transfer`) VALUES ('{}', '{}', '{}', 'SECURE', '0')".format(device_id, user_id, model_id))
+        SqlRunner.run_sql_no_response("""INSERT INTO `device_application`.`device_assignments` (`device_id`, `user_id`, `model_id`, `status`, `open_transfer`) 
+        VALUES ('{}', '{}', '{}', 'SECURE', '0')""".format(device_id, user_id, model_id))
     
     def get_incoming_transfers(user_id):
         return SqlRunner.run_sql_get_all("""SELECT device_transfers.device_id, device_models.model_name, user_accounts.user_display_name, user_accounts.user_email
